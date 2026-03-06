@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Study Planner Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --background-light: #f8f9fa;
+            --text-dark: #333;
+            --text-light: #666;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        body.dark-mode .card {
+            background: #0f3460;
+            color: #e4e4e4;
+        }
+
+        body.dark-mode .card h2 {
+            color: #64b5f6;
+            border-bottom-color: #64b5f6;
+        }
+
+        body.dark-mode .task-item {
+            background: #1a1a2e;
+            color: #e4e4e4;
+        }
+
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group select,
+        body.dark-mode .form-group textarea {
+            background: #1a1a2e;
+            color: #e4e4e4;
+            border-color: #444;
+        }
+
+        body.dark-mode .stat-card {
+            background: #0f3460;
+            color: #e4e4e4;
+        }
+
+        body.dark-mode .time-slot {
+            background: #1a1a2e;
+        }
+
+        body.dark-mode .filter-btn {
+            background: #1a1a2e;
+            color: #64b5f6;
+            border-color: #64b5f6;
+        }
+
+        body.dark-mode .filter-btn.active {
+            background: #64b5f6;
+            color: #1a1a2e;
+        }
+
+        body.dark-mode .search-box {
+            background: #1a1a2e;
+            color: #e4e4e4;
+            border-color: #444;
+        }
+
+        body.dark-mode .modal-content {
+            background: #0f3460;
+            color: #e4e4e4;
+        }
+
+        body.dark-mode .progress-bar {
+            background: #1a1a2e;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .header-controls {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        body.dark-mode .form-group label {
+            color: #e4e4e4;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0.8;
+        }
+
+        .task-list {
+            margin-top: 20px;
+        }
+
+        .task-item {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+
+        .task-item:hover {
+            transform: translateX(5px);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            border-left-color: #4caf50;
+        }
+
+        .task-item.high-priority {
+            border-left-color: #f44336;
+            background: #fff5f5;
+        }
+
+        body.dark-mode .task-item.high-priority {
+            background: #2d1515;
+        }
+
+        .task-item.medium-priority {
+            border-left-color: #ff9800;
+            background: #fff8f0;
+        }
+
+        body.dark-mode .task-item.medium-priority {
+            background: #2d2415;
+        }
+
+        .task-item.low-priority {
+            border-left-color: #4caf50;
+            background: #f0fff4;
+        }
+
+        body.dark-mode .task-item.low-priority {
+            background: #152d15;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            flex: 1;
+        }
+
+        body.dark-mode .task-title {
+            color: #e4e4e4;
+        }
+
+        .task-title.completed {
+            text-decoration: line-through;
+        }
+
+        .task-meta {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        body.dark-mode .task-meta {
+            color: #aaa;
+        }
+
+        .task-meta span {
+            margin-right: 15px;
+            display: inline-block;
+        }
+
+        .task-description {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        body.dark-mode .task-description {
+            color: #ccc;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .task-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: opacity 0.2s;
+        }
+
+        .task-actions button:hover {
+            opacity: 0.8;
+        }
+
+        .btn-complete {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-high {
+            background: #f44336;
+            color: white;
+        }
+
+        .priority-medium {
+            background: #ff9800;
+            color: white;
+        }
+
+        .priority-low {
+            background: #4caf50;
+            color: white;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        body.dark-mode .stat-label {
+            color: #aaa;
+        }
+
+        .schedule-section {
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .time-slot {
+            background: #f0f4ff;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .time-label {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 120px;
+        }
+
+        body.dark-mode .time-label {
+            color: #64b5f6;
+        }
+
+        .time-task {
+            flex: 1;
+            color: #333;
+        }
+
+        body.dark-mode .time-task {
+            color: #e4e4e4;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .deadline-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #856404;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* Pomodoro Timer */
+        .pomodoro-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .timer-display {
+            font-size: 3em;
+            font-weight: 700;
+            color: #667eea;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .timer-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .timer-btn.start {
+            background: #4caf50;
+            color: white;
+        }
+
+        .timer-btn.pause {
+            background: #ff9800;
+            color: white;
+        }
+
+        .timer-btn.reset {
+            background: #f44336;
+            color: white;
+        }
+
+        .timer-mode {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        /* Export/Import buttons */
+        .utility-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .utility-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode .utility-btn {
+            background: #1a1a2e;
+            color: #64b5f6;
+            border-color: #64b5f6;
+        }
+
+        .utility-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        body.dark-mode .utility-btn:hover {
+            background: #64b5f6;
+            color: #1a1a2e;
+        }
+
+        /* Streak Display */
+        .streak-badge {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header-controls {
+                position: static;
+                justify-content: center;
+                margin-top: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .timer-display {
+                font-size: 2em;
+            }
+        }
+
+        /* Scroll bar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        body.dark-mode ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+
+        body.dark-mode ::-webkit-scrollbar-thumb {
+            background: #64b5f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Daily Study Planner Pro</h1>
+            <p>Organize your study tasks with smart scheduling and deadline prioritization</p>
+            <div class="header-controls">
+                <button class="icon-btn" onclick="planner.toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+                <button class="icon-btn" onclick="planner.showPomodoroTimer()" title="Pomodoro Timer">⏰</button>
+                <button class="icon-btn" onclick="planner.showStats()" title="Statistics">📊</button>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTasks">0</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedTasks">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingTasks">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalHours">0</div>
+                <div class="stat-label">Total Hours</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedHours">0</div>
+                <div class="stat-label">Completed Hours</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="currentStreak">0</div>
+                <div class="stat-label">🔥 Day Streak</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>➕ Add New Task</h2>
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label for="taskTitle">Task Title *</label>
+                        <input type="text" id="taskTitle" required placeholder="e.g., Study Calculus Chapter 5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskSubject">Subject/Category</label>
+                        <input type="text" id="taskSubject" placeholder="e.g., Mathematics, Physics">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskDescription">Description</label>
+                        <textarea id="taskDescription" placeholder="Add details about this task..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskDuration">Duration (minutes) *</label>
+                        <input type="number" id="taskDuration" required min="15" step="15" value="60" placeholder="60">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskDeadline">Deadline *</label>
+                        <input type="date" id="taskDeadline" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taskPriority">Priority</label>
+                        <select id="taskPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn" id="taskFormBtn">Add Task</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>📅 Auto-Generated Schedule</h2>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+                <div id="scheduleContainer" class="schedule-section">
+                    <div class="empty-state">
+                        <p>Add tasks to generate your daily schedule automatically</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 All Tasks</h2>
+            
+            <div class="utility-buttons">
+                <button class="utility-btn" onclick="planner.exportTasks()">📥 Export Tasks</button>
+                <button class="utility-btn" onclick="planner.importTasks()">📤 Import Tasks</button>
+                <button class="utility-btn" onclick="planner.clearCompleted()">🗑️ Clear Completed</button>
+                <button class="utility-btn" onclick="planner.clearAll()">🗑️ Clear All</button>
+            </div>
+
+            <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search tasks...">
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="pending">Pending</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+                <button class="filter-btn" data-filter="high">High Priority</button>
+                <button class="filter-btn" data-filter="urgent">Urgent</button>
+                <button class="filter-btn" data-filter="today">Due Today</button>
+            </div>
+
+            <div id="taskList" class="task-list">
+                <div class="empty-state">
+                    <p>No tasks yet. Start by adding your first study task!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Edit Task</h2>
+                <button class="close-btn" onclick="planner.closeEditModal()">&times;</button>
+            </div>
+            <form id="editTaskForm">
+                <input type="hidden" id="editTaskId">
+                <div class="form-group">
+                    <label for="editTaskTitle">Task Title *</label>
+                    <input type="text" id="editTaskTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTaskSubject">Subject/Category</label>
+                    <input type="text" id="editTaskSubject">
+                </div>
+                <div class="form-group">
+                    <label for="editTaskDescription">Description</label>
+                    <textarea id="editTaskDescription"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editTaskDuration">Duration (minutes) *</label>
+                    <input type="number" id="editTaskDuration" required min="15" step="15">
+                </div>
+                <div class="form-group">
+                    <label for="editTaskDeadline">Deadline *</label>
+                    <input type="date" id="editTaskDeadline" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTaskPriority">Priority</label>
+                    <select id="editTaskPriority">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Update Task</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pomodoro Timer Modal -->
+    <div id="pomodoroModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⏰ Pomodoro Timer</h2>
+                <button class="close-btn" onclick="planner.closePomodoroModal()">&times;</button>
+            </div>
+            <div class="pomodoro-container">
+                <div class="timer-mode">
+                    <button class="mode-btn active" data-mode="work" onclick="planner.setTimerMode('work')">Work (25m)</button>
+                    <button class="mode-btn" data-mode="short" onclick="planner.setTimerMode('short')">Short Break (5m)</button>
+                    <button class="mode-btn" data-mode="long" onclick="planner.setTimerMode('long')">Long Break (15m)</button>
+                </div>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn start" onclick="planner.startTimer()">▶️ Start</button>
+                    <button class="timer-btn pause" onclick="planner.pauseTimer()">⏸️ Pause</button>
+                    <button class="timer-btn reset" onclick="planner.resetTimer()">🔄 Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Modal -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📊 Study Statistics</h2>
+                <button class="close-btn" onclick="planner.closeStatsModal()">&times;</button>
+            </div>
+            <div id="statsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        class StudyPlanner {
+            constructor() {
+                this.tasks = this.loadTasks();
+                this.currentFilter = 'all';
+                this.searchQuery = '';
+                this.editingTaskId = null;
+                this.darkMode = this.loadDarkMode();
+                
+                // Pomodoro Timer
+                this.timerMode = 'work';
+                this.timerDurations = {
+                    work: 25 * 60,
+                    short: 5 * 60,
+                    long: 15 * 60
+                };
+                this.timeRemaining = this.timerDurations[this.timerMode];
+                this.timerInterval = null;
+                this.timerRunning = false;
+
+                // Streak tracking
+                this.streak = this.loadStreak();
+                
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.setMinDate();
+                this.renderTasks();
+                this.updateStats();
+                this.generateSchedule();
+                this.applyDarkMode();
+                this.updateStreak();
+            }
+
+            setupEventListeners() {
+                document.getElementById('taskForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.addTask();
+                });
+
+                document.getElementById('editTaskForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.updateTask();
+                });
+
+                document.getElementById('searchBox').addEventListener('input', (e) => {
+                    this.searchQuery = e.target.value.toLowerCase();
+                    this.renderTasks();
+                });
+
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentFilter = e.target.dataset.filter;
+                        this.renderTasks();
+                    });
+                });
+            }
+
+            setMinDate() {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('taskDeadline').min = today;
+                document.getElementById('taskDeadline').value = today;
+            }
+
+            loadTasks() {
+                const saved = localStorage.getItem('studyTasks');
+                return saved ? JSON.parse(saved) : [];
+            }
+
+            saveTasks() {
+                localStorage.setItem('studyTasks', JSON.stringify(this.tasks));
+            }
+
+            loadDarkMode() {
+                const saved = localStorage.getItem('darkMode');
+                return saved === 'true';
+            }
+
+            saveDarkMode() {
+                localStorage.setItem('darkMode', this.darkMode);
+            }
+
+            loadStreak() {
+                const saved = localStorage.getItem('studyStreak');
+                return saved ? JSON.parse(saved) : { count: 0, lastDate: null };
+            }
+
+            saveStreak() {
+                localStorage.setItem('studyStreak', JSON.stringify(this.streak));
+            }
+
+            updateStreak() {
+                const today = new Date().toDateString();
+                const completedToday = this.tasks.some(task => {
+                    if (!task.completed) return false;
+                    const completedDate = new Date(task.completedAt).toDateString();
+                    return completedDate === today;
+                });
+
+                if (completedToday && this.streak.lastDate !== today) {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayStr = yesterday.toDateString();
+
+                    if (this.streak.lastDate === yesterdayStr || this.streak.count === 0) {
+                        this.streak.count++;
+                    } else if (this.streak.lastDate !== today) {
+                        this.streak.count = 1;
+                    }
+                    this.streak.lastDate = today;
+                    this.saveStreak();
+                }
+
+                document.getElementById('currentStreak').textContent = this.streak.count;
+            }
+
+            addTask() {
+                const task = {
+                    id: Date.now(),
+                    title: document.getElementById('taskTitle').value.trim(),
+                    subject: document.getElementById('taskSubject').value.trim(),
+                    description: document.getElementById('taskDescription').value.trim(),
+                    duration: parseInt(document.getElementById('taskDuration').value),
+                    deadline: document.getElementById('taskDeadline').value,
+                    priority: document.getElementById('taskPriority').value,
+                    completed: false,
+                    createdAt: new Date().toISOString(),
+                    completedAt: null
+                };
+
+                this.tasks.push(task);
+                this.saveTasks();
+                this.renderTasks();
+                this.updateStats();
+                this.generateSchedule();
+                document.getElementById('taskForm').reset();
+                this.setMinDate();
+            }
+
+            editTask(id) {
+                const task = this.tasks.find(t => t.id === id);
+                if (!task) return;
+
+                this.editingTaskId = id;
+                document.getElementById('editTaskId').value = id;
+                document.getElementById('editTaskTitle').value = task.title;
+                document.getElementById('editTaskSubject').value = task.subject || '';
+                document.getElementById('editTaskDescription').value = task.description || '';
+                document.getElementById('editTaskDuration').value = task.duration;
+                document.getElementById('editTaskDeadline').value = task.deadline;
+                document.getElementById('editTaskPriority').value = task.priority;
+
+                document.getElementById('editModal').classList.add('show');
+            }
+
+            updateTask() {
+                const id = parseInt(document.getElementById('editTaskId').value);
+                const task = this.tasks.find(t => t.id === id);
+                
+                if (task) {
+                    task.title = document.getElementById('editTaskTitle').value.trim();
+                    task.subject = document.getElementById('editTaskSubject').value.trim();
+                    task.description = document.getElementById('editTaskDescription').value.trim();
+                    task.duration = parseInt(document.getElementById('editTaskDuration').value);
+                    task.deadline = document.getElementById('editTaskDeadline').value;
+                    task.priority = document.getElementById('editTaskPriority').value;
+
+                    this.saveTasks();
+                    this.renderTasks();
+                    this.updateStats();
+                    this.generateSchedule();
+                    this.closeEditModal();
+                }
+            }
+
+            closeEditModal() {
+                document.getElementById('editModal').classList.remove('show');
+                this.editingTaskId = null;
+            }
+
+            deleteTask(id) {
+                if (confirm('Are you sure you want to delete this task?')) {
+                    this.tasks = this.tasks.filter(task => task.id !== id);
+                    this.saveTasks();
+                    this.renderTasks();
+                    this.updateStats();
+                    this.generateSchedule();
+                }
+            }
+
+            toggleComplete(id) {
+                const task = this.tasks.find(t => t.id === id);
+                if (task) {
+                    task.completed = !task.completed;
+                    task.completedAt = task.completed ? new Date().toISOString() : null;
+                    this.saveTasks();
+                    this.renderTasks();
+                    this.updateStats();
+                    this.generateSchedule();
+                    this.updateStreak();
+                }
+            }
+
+            getDaysUntilDeadline(deadline) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const deadlineDate = new Date(deadline);
+                deadlineDate.setHours(0, 0, 0, 0);
+                const diffTime = deadlineDate - today;
+                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            }
+
+            isUrgent(task) {
+                const daysUntil = this.getDaysUntilDeadline(task.deadline);
+                return daysUntil <= 2 && daysUntil >= 0 && !task.completed;
+            }
+
+            isDueToday(task) {
+                const daysUntil = this.getDaysUntilDeadline(task.deadline);
+                return daysUntil === 0 && !task.completed;
+            }
+
+            sortTasksByPriority(tasks) {
+                const priorityValue = { high: 3, medium: 2, low: 1 };
+                
+                return tasks.sort((a, b) => {
+                    if (a.completed !== b.completed) {
+                        return a.completed ? 1 : -1;
+                    }
+
+                    const aDays = this.getDaysUntilDeadline(a.deadline);
+                    const bDays = this.getDaysUntilDeadline(b.deadline);
+                    
+                    if (aDays !== bDays) {
+                        return aDays - bDays;
+                    }
+
+                    return priorityValue[b.priority] - priorityValue[a.priority];
+                });
+            }
+
+            filterTasks(tasks) {
+                let filtered = tasks;
+
+                // Apply search filter
+                if (this.searchQuery) {
+                    filtered = filtered.filter(t => 
+                        t.title.toLowerCase().includes(this.searchQuery) ||
+                        (t.description && t.description.toLowerCase().includes(this.searchQuery)) ||
+                        (t.subject && t.subject.toLowerCase().includes(this.searchQuery))
+                    );
+                }
+
+                // Apply category filter
+                switch (this.currentFilter) {
+                    case 'pending':
+                        return filtered.filter(t => !t.completed);
+                    case 'completed':
+                        return filtered.filter(t => t.completed);
+                    case 'high':
+                        return filtered.filter(t => t.priority === 'high' && !t.completed);
+                    case 'urgent':
+                        return filtered.filter(t => this.isUrgent(t));
+                    case 'today':
+                        return filtered.filter(t => this.isDueToday(t));
+                    default:
+                        return filtered;
+                }
+            }
+
+            renderTasks() {
+                const container = document.getElementById('taskList');
+                const filteredTasks = this.filterTasks([...this.tasks]);
+                const sortedTasks = this.sortTasksByPriority(filteredTasks);
+
+                if (sortedTasks.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>No tasks found for this filter.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = sortedTasks.map(task => {
+                    const daysUntil = this.getDaysUntilDeadline(task.deadline);
+                    const isUrgent = this.isUrgent(task);
+                    const deadlineText = daysUntil === 0 ? 'Today' : 
+                                        daysUntil === 1 ? 'Tomorrow' :
+                                        daysUntil < 0 ? `${Math.abs(daysUntil)} days overdue` :
+                                        `${daysUntil} days`;
+
+                    return `
+                        <div class="task-item ${task.completed ? 'completed' : ''} ${task.priority}-priority">
+                            <div class="task-header">
+                                <div class="task-title ${task.completed ? 'completed' : ''}">
+                                    ${task.title}
+                                </div>
+                                <span class="priority-badge priority-${task.priority}">
+                                    ${task.priority}
+                                </span>
+                            </div>
+                            
+                            <div class="task-meta">
+                                ${task.subject ? `<span>📚 ${task.subject}</span>` : ''}
+                                <span>⏱️ ${task.duration} min</span>
+                                <span>📅 Due: ${new Date(task.deadline).toLocaleDateString()}</span>
+                                <span ${daysUntil < 0 && !task.completed ? 'style="color: red; font-weight: 600;"' : ''}>⏰ ${deadlineText}</span>
+                            </div>
+                            
+                            ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
+                            
+                            ${isUrgent && !task.completed ? `
+                                <div class="deadline-warning">
+                                    ⚠️ Urgent: This task is due very soon!
+                                </div>
+                            ` : ''}
+                            
+                            <div class="task-actions">
+                                <button class="btn-complete" onclick="planner.toggleComplete(${task.id})">
+                                    ${task.completed ? '↩️ Undo' : '✓ Complete'}
+                                </button>
+                                <button class="btn-edit" onclick="planner.editTask(${task.id})">
+                                    ✏️ Edit
+                                </button>
+                                <button class="btn-delete" onclick="planner.deleteTask(${task.id})">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            updateStats() {
+                const total = this.tasks.length;
+                const completed = this.tasks.filter(t => t.completed).length;
+                const pending = total - completed;
+                const totalMinutes = this.tasks.reduce((sum, t) => sum + t.duration, 0);
+                const completedMinutes = this.tasks.filter(t => t.completed).reduce((sum, t) => sum + t.duration, 0);
+
+                document.getElementById('totalTasks').textContent = total;
+                document.getElementById('completedTasks').textContent = completed;
+                document.getElementById('pendingTasks').textContent = pending;
+                document.getElementById('totalHours').textContent = (totalMinutes / 60).toFixed(1);
+                document.getElementById('completedHours').textContent = (completedMinutes / 60).toFixed(1);
+
+                // Update progress bar
+                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+                const progressFill = document.getElementById('progressFill');
+                progressFill.style.width = percentage + '%';
+                progressFill.textContent = percentage + '%';
+            }
+
+            generateSchedule() {
+                const container = document.getElementById('scheduleContainer');
+                const pendingTasks = this.tasks.filter(t => !t.completed);
+                const sortedTasks = this.sortTasksByPriority([...pendingTasks]);
+
+                if (sortedTasks.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>All tasks completed! 🎉</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let currentTime = 9 * 60;
+                const schedule = [];
+
+                sortedTasks.forEach(task => {
+                    const startHour = Math.floor(currentTime / 60);
+                    const startMin = currentTime % 60;
+                    const endTime = currentTime + task.duration;
+                    const endHour = Math.floor(endTime / 60);
+                    const endMin = endTime % 60;
+
+                    schedule.push({
+                        time: `${String(startHour).padStart(2, '0')}:${String(startMin).padStart(2, '0')} - ${String(endHour).padStart(2, '0')}:${String(endMin).padStart(2, '0')}`,
+                        task: task.title,
+                        subject: task.subject,
+                        priority: task.priority
+                    });
+
+                    currentTime = endTime + 15;
+                });
+
+                container.innerHTML = schedule.map(slot => `
+                    <div class="time-slot">
+                        <div class="time-label">${slot.time}</div>
+                        <div class="time-task">
+                            ${slot.task}
+                            ${slot.subject ? `<br><small>📚 ${slot.subject}</small>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Dark Mode
+            toggleDarkMode() {
+                this.darkMode = !this.darkMode;
+                this.saveDarkMode();
+                this.applyDarkMode();
+            }
+
+            applyDarkMode() {
+                if (this.darkMode) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+
+            // Export/Import
+            exportTasks() {
+                const dataStr = JSON.stringify(this.tasks, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `study-planner-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+
+            importTasks() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'application/json';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const imported = JSON.parse(event.target.result);
+                            if (Array.isArray(imported)) {
+                                if (confirm('This will replace all existing tasks. Continue?')) {
+                                    this.tasks = imported;
+                                    this.saveTasks();
+                                    this.renderTasks();
+                                    this.updateStats();
+                                    this.generateSchedule();
+                                    alert('Tasks imported successfully!');
+                                }
+                            } else {
+                                alert('Invalid file format.');
+                            }
+                        } catch (error) {
+                            alert('Error reading file.');
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            }
+
+            clearCompleted() {
+                if (confirm('Delete all completed tasks?')) {
+                    this.tasks = this.tasks.filter(t => !t.completed);
+                    this.saveTasks();
+                    this.renderTasks();
+                    this.updateStats();
+                    this.generateSchedule();
+                }
+            }
+
+            clearAll() {
+                if (confirm('Delete ALL tasks? This cannot be undone!')) {
+                    this.tasks = [];
+                    this.saveTasks();
+                    this.renderTasks();
+                    this.updateStats();
+                    this.generateSchedule();
+                }
+            }
+
+            // Pomodoro Timer
+            showPomodoroTimer() {
+                document.getElementById('pomodoroModal').classList.add('show');
+            }
+
+            closePomodoroModal() {
+                document.getElementById('pomodoroModal').classList.remove('show');
+            }
+
+            setTimerMode(mode) {
+                if (this.timerRunning) {
+                    alert('Please pause the timer first.');
+                    return;
+                }
+
+                this.timerMode = mode;
+                this.timeRemaining = this.timerDurations[mode];
+                this.updateTimerDisplay();
+
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.mode === mode) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+
+            startTimer() {
+                if (this.timerRunning) return;
+
+                this.timerRunning = true;
+                this.timerInterval = setInterval(() => {
+                    this.timeRemaining--;
+                    this.updateTimerDisplay();
+
+                    if (this.timeRemaining <= 0) {
+                        this.pauseTimer();
+                        this.playNotificationSound();
+                        alert('Time\'s up! Take a break.');
+                    }
+                }, 1000);
+            }
+
+            pauseTimer() {
+                this.timerRunning = false;
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+            }
+
+            resetTimer() {
+                this.pauseTimer();
+                this.timeRemaining = this.timerDurations[this.timerMode];
+                this.updateTimerDisplay();
+            }
+
+            updateTimerDisplay() {
+                const minutes = Math.floor(this.timeRemaining / 60);
+                const seconds = this.timeRemaining % 60;
+                document.getElementById('timerDisplay').textContent = 
+                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+
+            playNotificationSound() {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            }
+
+            // Statistics
+            showStats() {
+                const statsContent = document.getElementById('statsContent');
+                
+                const subjectStats = {};
+                this.tasks.forEach(task => {
+                    const subject = task.subject || 'Uncategorized';
+                    if (!subjectStats[subject]) {
+                        subjectStats[subject] = { total: 0, completed: 0, hours: 0 };
+                    }
+                    subjectStats[subject].total++;
+                    if (task.completed) {
+                        subjectStats[subject].completed++;
+                        subjectStats[subject].hours += task.duration / 60;
+                    }
+                });
+
+                let statsHTML = '<h3 style="margin-bottom: 15px;">📊 Subject-wise Statistics</h3>';
+                
+                for (const [subject, stats] of Object.entries(subjectStats)) {
+                    const completion = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+                    statsHTML += `
+                        <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <h4 style="margin-bottom: 10px; color: #667eea;">${subject}</h4>
+                            <p>Total Tasks: ${stats.total} | Completed: ${stats.completed} | Hours Studied: ${stats.hours.toFixed(1)}h</p>
+                            <div class="progress-bar" style="margin-top: 10px;">
+                                <div class="progress-fill" style="width: ${completion}%;">${completion}%</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const priorityStats = {
+                    high: this.tasks.filter(t => t.priority === 'high' && t.completed).length,
+                    medium: this.tasks.filter(t => t.priority === 'medium' && t.completed).length,
+                    low: this.tasks.filter(t => t.priority === 'low' && t.completed).length
+                };
+
+                statsHTML += `
+                    <h3 style="margin: 25px 0 15px 0;">🎯 Priority Statistics</h3>
+                    <p><span class="priority-badge priority-high">High</span> ${priorityStats.high} completed</p>
+                    <p><span class="priority-badge priority-medium">Medium</span> ${priorityStats.medium} completed</p>
+                    <p><span class="priority-badge priority-low">Low</span> ${priorityStats.low} completed</p>
+                    
+                    <h3 style="margin: 25px 0 15px 0;">🔥 Streak</h3>
+                    <p class="streak-badge">Current Streak: ${this.streak.count} days</p>
+                `;
+
+                statsContent.innerHTML = statsHTML;
+                document.getElementById('statsModal').classList.add('show');
+            }
+
+            closeStatsModal() {
+                document.getElementById('statsModal').classList.remove('show');
+            }
+        }
+
+        const planner = new StudyPlanner();
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
